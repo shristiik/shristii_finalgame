@@ -1,0 +1,171 @@
+// Initialize game
+Initialize Pygame
+Set SCREEN_WIDTH to 800
+Set SCREEN_HEIGHT to 600
+Create screen with SCREEN_WIDTH and SCREEN_HEIGHT
+Set caption of screen to "Swift Adventure: Trivia Quiz"
+
+// Define colors
+Define BLACK as (255, 255, 255)
+Define WHITE as (0, 0, 0)
+Define RED as (255, 0, 0)
+Define GREEN as (0, 255, 0)
+
+// Load fonts
+Load font with size 36
+
+// Load background image and scale it to screen size
+Load background image "background.jpg"
+Scale background image to SCREEN_WIDTH and SCREEN_HEIGHT
+
+// Load sprite images
+Load question sprite "question_sprite.png"
+Print "Question sprite loaded"
+
+Load option sprite "option_sprite.png"
+Print "Option sprite loaded"
+
+// Load sounds
+Load correct answer sound "correct_answer.wav"
+Load wrong answer sound "wrong_answer.wav"
+
+// Define questions and answers
+Define questions dictionary with eras and their corresponding questions
+
+// Define class TriviaGame that inherits from GameState
+Class TriviaGame(GameState):
+    Method __init__(self, game, era):
+        Call superclass __init__
+        Set era
+        Set questions from the given era
+        Initialize current_question to 0
+        Initialize score to 0
+        Initialize selected_option to -1
+        Initialize correct_answers to an empty list
+
+    Method handle_event(self, event):
+        If event is QUIT:
+            Quit game
+        Else if event is KEYDOWN:
+            If event key is 1:
+                Set selected_option to 0
+            Else if event key is 2:
+                Set selected_option to 1
+            Else if event key is 3:
+                Set selected_option to 2
+            Else if event key is RETURN and selected_option is not -1:
+                Call check_answer method
+
+    Method check_answer(self):
+        If selected answer is correct:
+            Increment score
+            Append (current_question, True) to correct_answers
+            Play correct answer sound
+        Else:
+            Append (current_question, False) to correct_answers
+            Play wrong answer sound
+        Increment current_question
+        Reset selected_option to -1
+        If all questions are answered:
+            Change state to ScoreScreen with era, score, correct_answers, and questions
+
+    Method update(self, dt):
+        Pass
+
+    Method draw(self, surface):
+        Fill surface with WHITE
+        If current_question is less than total questions:
+            Render current question text
+            For each option:
+                Render option text
+                If option is selected:
+                    Highlight selected option
+        Else:
+            Render "Loading next question..." text
+
+// Define class Menu that inherits from GameState
+Class Menu(GameState):
+    Method __init__(self, game):
+        Call superclass __init__
+
+    Method handle_event(self, event):
+        If event is QUIT:
+            Quit game
+        Else if event is KEYDOWN:
+            If event key is RETURN:
+                Change state to LevelSelection
+
+    Method update(self, dt):
+        Pass
+
+    Method draw(self, surface):
+        Draw background image
+        Render title text
+        Render start text
+
+// Define class LevelSelection that inherits from GameState
+Class LevelSelection(GameState):
+    Method __init__(self, game):
+        Call superclass __init__
+        Set eras to list of question keys
+        Initialize selected_era to 0
+
+    Method handle_event(self, event):
+        If event is QUIT:
+            Quit game
+        Else if event is KEYDOWN:
+            If event key is UP:
+                Decrement selected_era with wrap-around
+            Else if event key is DOWN:
+                Increment selected_era with wrap-around
+            Else if event key is RETURN:
+                Change state to TriviaGame with selected era
+
+    Method update(self, dt):
+        Pass
+
+    Method draw(self, surface):
+        Draw background image
+        Render selection instruction text
+        For each era:
+            Render era text, highlight if selected
+
+// Define class ScoreScreen that inherits from GameState
+Class ScoreScreen(GameState):
+    Method __init__(self, game, era, score, correct_answers, questions):
+        Call superclass __init__
+        Set era
+        Set score
+        Set correct_answers
+        Set questions
+
+    Method handle_event(self, event):
+        If event is QUIT:
+            Quit game
+        Else if event is KEYDOWN:
+            If event key is RETURN:
+                Change state to LevelSelection
+
+    Method update(self, dt):
+        Pass
+
+    Method draw(self, surface):
+        Fill surface with WHITE
+        Render score text
+        For each question result:
+            Render question and answer text with correctness
+        Render replay instruction text
+
+// Define class SwiftAdventure
+Class SwiftAdventure:
+    Method __init__(self):
+        Initialize Game with screen
+        Change state to Menu
+
+    Method run(self):
+        Run game
+
+// Main execution
+If __name__ is "__main__":
+    Create instance of SwiftAdventure
+    Call run method
